@@ -15,9 +15,9 @@ power_on_startup = read_config()['General']['autostartbeamers']
 
 def change_power(sender, app_data, user_data):
     beamer, state = user_data.split("+")
-    with Projector.from_address(read_config()[f'{user_data}']['addr']) as projector:
-        projector.authenticate(read_config()[f'{user_data}']['password'])
-        projector.set_power(f'state')
+    with Projector.from_address(read_config()[f'{beamer}']['addr']) as projector:
+        projector.authenticate(read_config()[f'{beamer}']['password'])
+        projector.set_power(state)
 
 
 def power_switch_all(sender, app_data, user_data):
@@ -50,8 +50,8 @@ with dpg.window(label="all beamers", pos=(0,130)):
 
 
 if power_on_startup == "True":
-    power_switch_all(None, None, 'on')
-    pass
+    power_switch_all('', '', user_data='on')
+    
 
 
 dpg.setup_dearpygui()
