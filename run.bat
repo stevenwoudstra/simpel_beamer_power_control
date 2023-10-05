@@ -1,0 +1,1 @@
+call .\.venv\Scripts\activate.bat && py projector_control.py &
