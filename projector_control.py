@@ -34,17 +34,30 @@ def check_power_status():
         except TimeoutError:
             dpg.set_value(f"status{x+1}", "offline")
 
+def get_lamp_state():
+    for x in range(int(projector_count)):
+        try:
+            with Projector.from_address(read_config()[f'Beamer{str(x+1)}']['addr']) as projector:
+                projector.authenticate(read_config()[f'Beamer{str(x+1)}']['password'])
+                dpg.set_value(f"lamp{x+1}", projector.get_errors()['lamp'])
+                if dpg.get_value(f"lamp{x+1}") != "ok":
+                    dpg.configure_item(f"lamp{x+1}", color=(255,0,0))
+        except TimeoutError:
+            dpg.set_value(f"status{x+1}", "offline")
+
 dpg.create_context()
-dpg.create_viewport(title='projector control', width=540, height=300)
+dpg.create_viewport(title='projector control', width=540, height=340)
 
 for x in range(int(projector_count)):
     with dpg.window(label=f"beamer {str(x+1)}", pos=(130*x,0)):
         dpg.add_text("power status: ")
         dpg.add_text(label=f"status{x+1}", default_value="offline", tag=f"status{x+1}")
+        dpg.add_text("Lamp status: ")
+        dpg.add_text(label=f"lamp{x+1}", default_value="UNKOWN", tag=f"lamp{x+1}", )
         dpg.add_button(label="power on", callback=change_power, user_data=f'Beamer{str(x+1)}+on')
         dpg.add_button(label="power off", callback=change_power, user_data=f'Beamer{str(x+1)}+off')
 
-with dpg.window(label="all beamers", pos=(0,130)):
+with dpg.window(label="all beamers", pos=(0,190)):
     dpg.add_button(label="power on", callback=power_switch_all, user_data="on")
     dpg.add_button(label="power off", callback=power_switch_all, user_data="off")
 
@@ -64,6 +77,7 @@ while dpg.is_dearpygui_running():
     if frame_count == 300:
         frame_count = 0
         check_power_status()
+        get_lamp_state()
     frame_count += 1
     dpg.render_dearpygui_frame()
 
