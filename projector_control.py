@@ -46,7 +46,8 @@ def get_lamp_state():
             dpg.set_value(f"status{x+1}", "offline")
 
 dpg.create_context()
-dpg.create_viewport(title='projector control', width=540, height=340)
+dpg.create_viewport(title='projector control', width=130*int(projector_count), height=340)
+print(130*int(projector_count))
 
 for x in range(int(projector_count)):
     with dpg.window(label=f"beamer {str(x+1)}", pos=(130*x,0)):
